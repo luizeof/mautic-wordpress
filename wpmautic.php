@@ -69,6 +69,15 @@ function wpmautic_plugin_actions( $links ) {
 }
 add_filter( 'plugin_action_links', 'wpmautic_plugin_actions', 10, 2 );
 
+
+
+if ( ! function_exists( 'is_woocommerce_activated' ) ) {
+	function is_woocommerce_activated() {
+		if ( class_exists( 'woocommerce' ) ) { return true; } else { return false; }
+	}
+}
+
+
 /**
  * Retrieve one of the wpmautic options but sanitized
  *
@@ -236,6 +245,12 @@ function wpmautic_get_user_query() {
 			'Y-m-d',
 			strtotime( $current_user->user_registered )
 		);
+
+		if (is_woocommerce_activated()) {
+			$attrs['woo_oders_total'] = wc_get_customer_total_spent( get_current_user_id() );
+			$attrs['woo_oders_count'] = wc_get_customer_order_count( get_current_user_id() );
+		}
+
 	}
 
 	return $attrs;
